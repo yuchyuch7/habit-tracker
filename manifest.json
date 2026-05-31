@@ -2,7 +2,7 @@
   "name": "習慣追蹤",
   "short_name": "習慣",
   "description": "每日健康習慣追蹤 App",
-  "start_url": "/",
+  "start_url": "/habit-tracker/",
   "display": "standalone",
   "background_color": "#f5f2ee",
   "theme_color": "#1a1a1a",
