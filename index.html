@@ -695,6 +695,42 @@
 
     .habit-card { position: relative; z-index: 1; }
 
+    /* ── TARGET STEPPER ── */
+    .target-stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .stepper-btn {
+      width: 56px;
+      height: 50px;
+      border: none;
+      background: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .stepper-btn:active { background: var(--surface2); }
+
+    .stepper-val {
+      flex: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      border-left: 1.5px solid var(--border);
+      border-right: 1.5px solid var(--border);
+      padding: 12px 0;
+    }
+
     /* Long press edit hint */
     .edit-hint {
       font-size: 10px;
@@ -766,7 +802,11 @@
 
     <div class="form-group" id="targetGroup" style="display:none">
       <label class="form-label">每日目標（次）</label>
-      <input class="form-input" id="inputTarget" type="number" min="1" max="999" placeholder="8">
+      <div class="target-stepper">
+        <button class="stepper-btn" onclick="adjustTarget(-1)">−</button>
+        <span class="stepper-val" id="targetDisplay">8</span>
+        <button class="stepper-btn" onclick="adjustTarget(1)">+</button>
+      </div>
     </div>
 
     <button class="save-btn" id="saveBtn" onclick="saveHabit()">儲存</button>
@@ -785,6 +825,12 @@ let currentNav = 'today';
 let editingId = null;
 let selectedEmoji = EMOJIS[0];
 let selectedType = 'check';
+let targetVal = 8;
+
+function adjustTarget(delta) {
+  targetVal = Math.min(999, Math.max(1, targetVal + delta));
+  document.getElementById('targetDisplay').textContent = targetVal;
+}
 
 const today = () => new Date().toISOString().split('T')[0];
 const fmt = (d) => d.toISOString().split('T')[0];
@@ -1202,7 +1248,8 @@ function openAddModal() {
   selectedType = 'check';
   document.getElementById('modalTitle').textContent = '新增習慣';
   document.getElementById('inputName').value = '';
-  document.getElementById('inputTarget').value = '';
+  targetVal = 8;
+  document.getElementById('targetDisplay').textContent = targetVal;
   document.getElementById('saveBtn').textContent = '新增';
   document.getElementById('deleteBtn').style.display = 'none';
   buildEmojiPicker();
@@ -1218,7 +1265,8 @@ function openEditModal(id) {
   selectedType = habit.type;
   document.getElementById('modalTitle').textContent = '編輯習慣';
   document.getElementById('inputName').value = habit.name;
-  document.getElementById('inputTarget').value = habit.target || '';
+  targetVal = habit.target || 8;
+  document.getElementById('targetDisplay').textContent = targetVal;
   document.getElementById('saveBtn').textContent = '儲存';
   document.getElementById('deleteBtn').style.display = 'block';
   buildEmojiPicker();
@@ -1257,7 +1305,7 @@ function updateTypeUI() {
 function saveHabit() {
   const name = document.getElementById('inputName').value.trim();
   if (!name) { document.getElementById('inputName').focus(); return; }
-  const target = parseInt(document.getElementById('inputTarget').value) || 1;
+  const target = targetVal;
 
   if (editingId) {
     const idx = habits.findIndex(h => h.id === editingId);
