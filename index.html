@@ -804,7 +804,7 @@
       <label class="form-label">每日目標（次）</label>
       <div class="target-stepper">
         <button class="stepper-btn" onclick="adjustTarget(-1)">−</button>
-        <span class="stepper-val" id="targetDisplay">8</span>
+        <span class="stepper-val" id="targetDisplay">1</span>
         <button class="stepper-btn" onclick="adjustTarget(1)">+</button>
       </div>
     </div>
@@ -825,7 +825,7 @@ let currentNav = 'today';
 let editingId = null;
 let selectedEmoji = EMOJIS[0];
 let selectedType = 'check';
-let targetVal = 8;
+let targetVal = 1;
 
 function adjustTarget(delta) {
   targetVal = Math.min(999, Math.max(1, targetVal + delta));
@@ -1248,7 +1248,7 @@ function openAddModal() {
   selectedType = 'check';
   document.getElementById('modalTitle').textContent = '新增習慣';
   document.getElementById('inputName').value = '';
-  targetVal = 8;
+  targetVal = 1;
   document.getElementById('targetDisplay').textContent = targetVal;
   document.getElementById('saveBtn').textContent = '新增';
   document.getElementById('deleteBtn').style.display = 'none';
