@@ -870,18 +870,28 @@ let editingId = null;
 let selectedEmoji = EMOJIS[0];
 let selectedType = 'check';
 let targetVal = 1;
-let viewDate = new Date().toISOString().split('T')[0];
+const localFmt = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+let viewDate = localFmt();
 
 function shiftDay(delta) {
   const d = new Date(viewDate + 'T00:00:00');
   d.setDate(d.getDate() + delta);
-  const newDate = d.toISOString().split('T')[0];
-  const todayStr = new Date().toISOString().split('T')[0];
-  if (newDate <= todayStr) { viewDate = newDate; render(); }
+  const newDate = localFmt(d);
+  if (newDate <= localFmt()) { viewDate = newDate; render(); }
 }
 
 function goToday() {
-  viewDate = new Date().toISOString().split('T')[0];
+  viewDate = localFmt();
+  render();
+}
+
+function goToDate(dateStr) {
+  viewDate = dateStr;
+  currentNav = 'today';
+  currentView = 'day';
+  document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === 0));
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === 0));
   render();
 }
 
@@ -890,8 +900,8 @@ function adjustTarget(delta) {
   document.getElementById('targetDisplay').textContent = targetVal;
 }
 
-const today = () => new Date().toISOString().split('T')[0];
-const fmt = (d) => d.toISOString().split('T')[0];
+const today = () => localFmt();
+const fmt = (d) => localFmt(d);
 
 function save() {
   localStorage.setItem('habits', JSON.stringify(habits));
@@ -1150,7 +1160,7 @@ function renderWeek(area) {
             if (done) cls = 'done';
             else if (!isFuture && h.type === 'count' && log.count > 0) cls = 'partial';
             if (isToday) cls += ' today';
-            return `<div class="week-dot ${cls}">${done ? '✓' : (h.type === 'count' && !isFuture && log.count > 0 ? log.count : '')}</div>`;
+            return `<div class="week-dot ${cls}" ${!isFuture ? `onclick="goToDate('${ds}')" style="cursor:pointer"` : ''}>${done ? '✓' : (h.type === 'count' && !isFuture && log.count > 0 ? log.count : '')}</div>`;
           }).join('')}
         </div>
       </div>`;
@@ -1186,7 +1196,7 @@ function renderMonth(area) {
         else if (ratio > 0) cls = 'has-data';
       }
       if (isToday) cls += ' today';
-      return `<div class="month-cell ${cls}">${d.getDate()}</div>`;
+      return `<div class="month-cell ${cls}" ${!isFuture ? `onclick="goToDate('${ds}')"` : ''}>${d.getDate()}</div>`;
     }).join('')}
   </div>
   <div class="section-title">圖例</div>
